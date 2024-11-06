@@ -249,8 +249,58 @@ public class CuckooHash<K, V> {
 		// ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME AT TOP OF FILE.
 		// Also make sure you read this method's prologue above, it should help
 		// you. Especially the two HINTS in the prologue.
+		int hOneIndex = hash1(key);
+		int hTwoIndex = hash2(key);
+		// Skip insertion if duplicate <key, value> pair is found
+		if ((table[hOneIndex] != null && table[hOneIndex].getBucKey().equals(key) && table[hOneIndex].getValue().equals(value)) || (table[hTwoIndex] != null && table[hTwoIndex].getBucKey().equals(key) && table[hTwoIndex].getValue().equals(value))) {
+			return;  
+		}
 
-		return;
+		// Initialize the key-value pair to insert, and a iterator for detecting potential cycles
+		K tempKey = key;
+		V tempValue = value;
+		int iterations = 0;
+
+		while (iterations < CAPACITY) {
+			// Try to place the pair at the primary location, hOne
+			int hOnePos = hash1(tempKey);
+			if (table[hOnePos] == null) {
+				table[hOnePos] = new Bucket<>(tempKey, tempValue);
+				return;
+			} else {
+				// Kick out the existing element and place the new element in its spot
+				Bucket<K, V> evicted = table[hOnePos];
+				table[hOnePos] = new Bucket<>(tempKey, tempValue);
+
+				// Update the key-value pair to evicted and proceed to hTwo
+				tempKey = evicted.getBucKey();
+				tempValue = evicted.getValue();
+				iterations++;
+			}
+
+			// If iterations reach the capacity, assume a cycle and rehash
+			if (iterations == CAPACITY) {
+				rehash();
+				put(tempKey, tempValue);  
+				return;
+			}
+
+			// Try to place the pair at the secondary location, hTwo
+			int hTwoPos = hash2(tempKey);
+			if (table[hTwoPos] == null) {
+				table[hTwoPos] = new Bucket<>(tempKey, tempValue);
+				return;  
+			} else {
+				// Kick out the existing element in hTwo and place the new element in its spot
+				Bucket<K, V> evicted = table[hTwoPos];
+				table[hTwoPos] = new Bucket<>(tempKey, tempValue);
+
+				// Update the key-value pair for the next iteration
+				tempKey = evicted.getBucKey();
+				tempValue = evicted.getValue();
+				iterations++;
+			}
+		}
 	}
 
 

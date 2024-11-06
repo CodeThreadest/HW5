@@ -35,11 +35,11 @@ class ProblemSolutions {
         // ADD YOU CODE HERE -- DON'T FORGET TO ADD YOR NAME AT TOP OF FILE
         HashSet<Integer> subSet = new HashSet<>();
         for(int num: list1){
-            set.add(num);
+            subSet.add(num);
         }
         
         for(int num:list2){
-            if(subSet.contains(num)){
+            if(!subSet.contains(num)){
                 return false;
             }
         }
@@ -63,8 +63,21 @@ class ProblemSolutions {
     public int findKthLargest(int[] array, int k) {
 
         // ADD YOUR CODE HERE
-
-        return 0;
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        for(int i=0; i < k; i++) {
+            minHeap.offer(array[i]);
+        }
+        
+        for(int i=k; i < array.length; i++) {
+            if (!minHeap.isEmpty() && array[i] > minHeap.peek()) {
+                minHeap.poll();
+                minHeap.offer(array[i]);
+            }
+        }
+        if (minHeap.isEmpty()){
+            throw new IllegalArgumentException("k is larger than the array size.");
+        }
+        return minHeap.peek();
     }
 
 
@@ -84,8 +97,24 @@ class ProblemSolutions {
     public int[] sort2Arrays(int[] array1, int[] array2) {
 
         // ADD YOU CODE HERE
+        int n = array1.length;
+        int m = array2.length;
+        int[] mergedArray = new int[n + m];
 
-        return null;
+        // insert array1 into mergedArray
+        for (int i = 0; i < n; i++) {
+            mergedArray[i] = array1[i];
+        }
+
+        // insert array2 mergedArray
+        for (int i = 0; i < m; i++) {
+            mergedArray[n + i] = array2[i];
+        }
+
+       //sort array
+        Arrays.sort(mergedArray);
+
+        return mergedArray;
     }
 
 }
