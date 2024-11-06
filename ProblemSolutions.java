@@ -33,8 +33,17 @@ class ProblemSolutions {
     public boolean isSubset(int list1[], int list2[]) {
 
         // ADD YOU CODE HERE -- DON'T FORGET TO ADD YOR NAME AT TOP OF FILE
-
-        return false;
+        HashSet<Integer> subSet = new HashSet<>();
+        for(int num: list1){
+            set.add(num);
+        }
+        
+        for(int num:list2){
+            if(subSet.contains(num)){
+                return false;
+            }
+        }
+        return true;
     }
 
 
