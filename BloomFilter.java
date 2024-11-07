@@ -223,9 +223,18 @@ class BloomFilter {
         // of type BitSet (Java class BitSet). See Oracle documentation for
         // this class on available methods. You can also see how method 'add'
         // in this class uses the object.
-
-        return false;
+        for (int n = 0; n < noHashes; n++) {
+            long hashOne = hashCode(s, n);
+            int bitNum = (int) (hashOne) & this.hashMask;
+            if (!data.get(bitNum)) {  
+                return false;
+            }
+        }
+        // If all bits for all hash codes are set, return true (possible member)
+        return true;
     }
+     
+    
 
 
     /*********************************

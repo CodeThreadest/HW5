@@ -33,12 +33,16 @@ class ProblemSolutions {
     public boolean isSubset(int list1[], int list2[]) {
 
         // ADD YOU CODE HERE -- DON'T FORGET TO ADD YOR NAME AT TOP OF FILE
+        //initialize subSet
         HashSet<Integer> subSet = new HashSet<>();
+        //iterate over list1
         for(int num: list1){
+            //add to subSet
             subSet.add(num);
         }
-        
+        //iterate over list2
         for(int num:list2){
+            //if num is not in subSet 
             if(!subSet.contains(num)){
                 return false;
             }
@@ -64,11 +68,14 @@ class ProblemSolutions {
 
         // ADD YOUR CODE HERE
         PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        //iterate over k elements
         for(int i=0; i < k; i++) {
+            //insert and check if array[i] can be added to minHeap
             minHeap.offer(array[i]);
         }
-        
+        //iterate over array.length elements
         for(int i=k; i < array.length; i++) {
+            //Check if minHeap is empty and that array[i] is greater than minHeaps first element
             if (!minHeap.isEmpty() && array[i] > minHeap.peek()) {
                 minHeap.poll();
                 minHeap.offer(array[i]);
@@ -97,20 +104,18 @@ class ProblemSolutions {
     public int[] sort2Arrays(int[] array1, int[] array2) {
 
         // ADD YOU CODE HERE
+        //initialize arrays and there lengths
         int n = array1.length;
         int m = array2.length;
         int[] mergedArray = new int[n + m];
-
         // insert array1 into mergedArray
         for (int i = 0; i < n; i++) {
             mergedArray[i] = array1[i];
         }
-
-        // insert array2 mergedArray
+        // insert array2 into mergedArray
         for (int i = 0; i < m; i++) {
             mergedArray[n + i] = array2[i];
         }
-
        //sort array
         Arrays.sort(mergedArray);
 

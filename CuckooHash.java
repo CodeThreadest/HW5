@@ -249,70 +249,44 @@ public class CuckooHash<K, V> {
 		// ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME AT TOP OF FILE.
 		// Also make sure you read this method's prologue above, it should help
 		// you. Especially the two HINTS in the prologue.
-		int hOneIndex = hash1(key);
-		int hTwoIndex = hash2(key);
-		// Skip insertion if duplicate <key, value> pair is found
-		if ((table[hOneIndex] != null && table[hOneIndex].getBucKey().equals(key) && table[hOneIndex].getValue().equals(value)) || (table[hTwoIndex] != null && table[hTwoIndex].getBucKey().equals(key) && table[hTwoIndex].getValue().equals(value))) {
-			return;  
-		}
+		int posOne = hash1(key);
+		
+		int attempts = 0;
 
-		// Initialize the key-value pair to insert, and a iterator for detecting potential cycles
-		K tempKey = key;
-		V tempValue = value;
-		int iterations = 0;
-
-		while (iterations < CAPACITY) {
-			// Try to place the pair at the primary location, hOne
-			int hOnePos = hash1(tempKey);
-			if (table[hOnePos] == null) {
-				table[hOnePos] = new Bucket<>(tempKey, tempValue);
-				return;
-			} else {
-				// Kick out the existing element and place the new element in its spot
-				Bucket<K, V> evicted = table[hOnePos];
-				table[hOnePos] = new Bucket<>(tempKey, tempValue);
-
-				// Update the key-value pair to evicted and proceed to hTwo
-				tempKey = evicted.getBucKey();
-				tempValue = evicted.getValue();
-				iterations++;
-			}
-
-			// If iterations reach the capacity, assume a cycle and rehash
-			if (iterations == CAPACITY) {
-				rehash();
-				put(tempKey, tempValue);  
+		// Loop for cuckoo eviction, allowing for up to CAPACITY iterations to detect cycles
+		while (attempts < CAPACITY) {
+			// Check for empty position or duplicate (key, value) pair
+			if (table[posOne] == null || (table[posOne].getBucKey().equals(key) && table[posOne].getValue().equals(value))) {
+				table[posOne] = new Bucket<>(key, value);
 				return;
 			}
 
-			// Try to place the pair at the secondary location, hTwo
-			int hTwoPos = hash2(tempKey);
-			if (table[hTwoPos] == null) {
-				table[hTwoPos] = new Bucket<>(tempKey, tempValue);
-				return;  
-			} else {
-				// Kick out the existing element in hTwo and place the new element in its spot
-				Bucket<K, V> evicted = table[hTwoPos];
-				table[hTwoPos] = new Bucket<>(tempKey, tempValue);
+			// existing item at posOne
+			Bucket<K, V> tempBuc = table[posOne];
+			table[posOne] = new Bucket<>(key, value);
 
-				// Update the key-value pair for the next iteration
-				tempKey = evicted.getBucKey();
-				tempValue = evicted.getValue();
-				iterations++;
-			}
+			// Update key and value to the temp pair, switching hash positions
+			key = tempBuc.getBucKey();
+			value = tempBuc.getValue();
+			posOne = posOne == hash1(key) ? hash2(key) : hash1(key);  //find what hash function is needed
+
+			attempts++;
 		}
+
+		// a cycle has been reached, so we need to rehash and retry
+		rehash();
+		put(key, value);  // Retry insertion after rehashing
 	}
 
-
 	/**
-	 * Method get
-	 *
-	 * Retrieve a value in O(1) time based on the key because it can only 
-     * be in 1 of 2 locations
-	 *
-	 * @param key Key to search for
-	 * @return the found value or null if it doesn't exist
-	 */
+         * Method get
+         *
+         * Retrieve a value in O(1) time based on the key because it can only 
+         * be in 1 of 2 locations
+         *
+         * @param key Key to search for
+         * @return the found value or null if it doesn't exist
+         */
 
 	public V get(K key) {
 		int pos1 = hash1(key);
