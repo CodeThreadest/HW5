@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Daniel Duvic / 001
  *
  *   Note, additional comments provided throughout source code is
  *   for educational purposes.
